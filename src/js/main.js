@@ -1,4 +1,4 @@
-var canvas, ctx, altura, largura, frames=0,maxPulos=3,
+var canvas, ctx, altura, largura, frames=0,maxPulos=3, velocidade=6,
 
 chao = {
     y: 550,
@@ -48,18 +48,38 @@ personagem = {
 obstaculos = {
     _obs: [],
     cores: ["#7777FF", "#4444FF"],
+    tempoInsere: 0,
 
     insere: function(){
         this._obs.push({
-            x: 200,
+            x: largura,
             largura: 30 + Math.floor(Math.random() * 21),
             altura: 30 + Math.floor(120 * Math.random()),
             cor: this.cores[Math.floor(2 * Math.random())]
         });
+
+        this.tempoInsere = 35 + Math.floor(Math.random() + 21);
     },
 
     atualiza: function(){
 
+        if(this.tempoInsere == 0){
+            this.insere();
+        }else{
+            this.tempoInsere--;
+        }
+
+        for(var i=0, tam = this._obs.length; i<tam; i++){
+            var obs = this._obs[i];
+
+            obs.x -= velocidade;
+
+            if(obs.x < -obs.largura){
+                this._obs.splice(i, 1);
+                tam--;
+                i--;
+            }
+        }
     },
 
     desenha: function(){
@@ -112,6 +132,7 @@ function atualiza(){
     frames++;
 
     personagem.atualiza();
+    obstaculos.atualiza();
 }
 
 function desenha(){
