@@ -17,9 +17,9 @@ personagem = {
     altura: 50,
     largura: 50,
     cor: "#ff4e4e",
-    gravidade: 1.5,
+    gravidade: 1.6,
     velocidade: 0,
-    forcaDoPulo: 15,
+    forcaDoPulo: 23.6,
     qntPulos: 0,
 
     atualiza: function(){
@@ -42,6 +42,32 @@ personagem = {
     desenha: function(){
         ctx.fillStyle = this.cor;
         ctx.fillRect(this.x, this.y, this.largura, this.altura);
+    }
+},
+
+obstaculos = {
+    _obs: [],
+    cores: ["#7777FF", "#4444FF"],
+
+    insere: function(){
+        this._obs.push({
+            x: 200,
+            largura: 30 + Math.floor(Math.random() * 21),
+            altura: 30 + Math.floor(120 * Math.random()),
+            cor: this.cores[Math.floor(2 * Math.random())]
+        });
+    },
+
+    atualiza: function(){
+
+    },
+
+    desenha: function(){
+        for(var i=0, tam = this._obs.length; i<tam; i++){
+            var obs = this._obs[i];
+            ctx.fillStyle = obs.cor;
+            ctx.fillRect(obs.x, chao.y-obs.altura, obs.largura, obs.altura);
+        }
     }
 };
 
@@ -93,6 +119,7 @@ function desenha(){
     ctx.fillRect(0, 0, largura, altura);
 
     chao.desenha();
+    obstaculos.desenha();
     personagem.desenha();
 }
 
