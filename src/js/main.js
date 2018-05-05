@@ -1,4 +1,11 @@
 var canvas, ctx, altura, largura, frames=0,maxPulos=3, velocidade=6,
+estadoAtual,
+
+estados ={
+    jogar:0,
+    jogando:1,
+    perdeu:2
+},
 
 chao = {
     y: 550,
@@ -74,12 +81,22 @@ obstaculos = {
 
             obs.x -= velocidade;
 
-            if(obs.x < -obs.largura){
+            if(personagem.x < obs.x + obs.largura
+            && personagem.x + personagem.largura >= obs.x
+            && personagem.y + personagem.altura >= chao.y - obs.altura){
+
+                estadoAtual = estados.perdeu;
+
+            }else if(obs.x < -obs.largura){
                 this._obs.splice(i, 1);
                 tam--;
                 i--;
             }
         }
+    },
+
+    limpa: function(){
+        this._obs = [];
     },
 
     desenha: function(){
@@ -96,7 +113,16 @@ obstaculos = {
 
 
 function clique(evento){
-    personagem.pula();
+
+    if(estadoAtual == estados.jogando)
+        personagem.pula();
+
+    else if(estadoAtual == estados.jogar)
+        estadoAtual = estados.jogando;
+
+    else if(estadoAtual == estados.perdeu)
+        estadoAtual = estados.jogar
+
 }
 
 function main(){
@@ -104,7 +130,7 @@ function main(){
     largura = window.innerWidth;
 
     if(largura >= 500){
-        largura = 800;
+        largura = 600;
         altura = 600;
     }
 
@@ -118,6 +144,8 @@ function main(){
 
     document.addEventListener("mousedown", clique);
 
+
+    estadoAtual = estados.jogar;
     roda();
 }
 
@@ -132,16 +160,31 @@ function atualiza(){
     frames++;
 
     personagem.atualiza();
-    obstaculos.atualiza();
+
+    if(estadoAtual == estados.jogando){
+        obstaculos.atualiza();
+    }
 }
 
 function desenha(){
+
     ctx.fillStyle = "blue";
     ctx.fillRect(0, 0, largura, altura);
 
+    if(estadoAtual == estados.jogar){
+        ctx.fillStyle = "green";
+        ctx.fillRect(largura/2 -50, altura/2 -50, 100, 100);
+
+    }else if(estadoAtual == estados.perdeu){
+        ctx.fillStyle = "red";
+        ctx.fillRect(largura/2 -50, altura/2 -50, 100, 100);
+
+    }else if(estadoAtual ==  estados.jogando){
+        obstaculos.desenha();      
+    }
+    
     chao.desenha();
-    obstaculos.desenha();
-    personagem.desenha();
+    personagem.desenha();  
 }
 
 main();
